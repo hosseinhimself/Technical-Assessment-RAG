@@ -76,7 +76,3 @@ else:
 - The transformer model used for embeddings is specified in `main.py` as well.
 - The number of top-k documents retrieved per query can be adjusted in `main.py`.
 - Faiss index and related files' paths are defined in `main.py`.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
