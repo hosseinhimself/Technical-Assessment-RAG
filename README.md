@@ -1,7 +1,6 @@
 # Technical-Assessment-RAG
 
-This document retrieval system is designed to retrieve relevant documents based on user queries. It utilizes the RAG (Retrieval-Augmented Generation) model architecture, leveraging transformers for text embeddings and Faiss for efficient similarity search.
-
+This document retrieval system is built to efficiently retrieve relevant documents based on user queries. It leverages the RAG (Retrieval-Augmented Generation) model architecture, utilizing transformers for text embeddings and FAISS for efficient similarity search.
 ## Components
 
 ### RAGModel.py
@@ -11,7 +10,7 @@ This module contains classes and functions related to document processing, embed
 - **Document**: A Pydantic model representing a document with a single attribute `text`.
 - **DocumentProcessor**: Responsible for loading and refining documents from a given directory.
 - **EmbeddingModel**: Handles the loading of a transformer-based model for generating embeddings.
-- **FaissIndex**: Manages the Faiss index for efficient document retrieval based on embeddings.
+- **FaissIndex**: Manages the FAISS index for efficient document retrieval based on embeddings.
 - **QueryEngine**: Performs document retrieval based on a query using the embedding model and Faiss index.
 - **FaissRetriever**: Retrieves documents from the Faiss index based on query embeddings.
 
