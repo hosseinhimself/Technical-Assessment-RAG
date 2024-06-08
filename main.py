@@ -32,7 +32,9 @@ curl -X GET "http://localhost:8000/query?query_text=What+is+fat-tailedness?&top_
 
 To add a new document, send a POST request to the `/add_document` endpoint with the document text in JSON format:
 
-```curl -X POST "http://localhost:8000/add_document" -H "Content-Type: application/json" -d '{"text": "This is a new document to add."}'```
+```
+curl -X POST "http://localhost:8000/add_document" -H "Content-Type: application/json" -d '{"text": "This is a new document to add."}'
+```
 """
 
 # FastAPI app setup
