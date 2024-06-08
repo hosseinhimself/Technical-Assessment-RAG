@@ -5,33 +5,34 @@ from RAGModel import DocumentProcessor, EmbeddingModel, FaissIndex, FaissRetriev
 
 # Description in plain text format
 description = """
-RAG API
 
 This API provides functionality for a Retrieval-Augmented Generation (RAG) model. The main features include querying a corpus for relevant documents and adding new documents to the index.
 
-Features
+## Features
 
 - Query Documents: Retrieve the most relevant documents based on a query.
 - Add Documents: Add new documents to the index to enhance the corpus.
 
-Endpoints
+## Endpoints
 
 - /query: Retrieve relevant documents based on a query text.
 - /add_document: Add a new document to the index.
 
-Example Usage
+## Example Usage
 
-Querying Documents
+### Querying Documents
 
 To query documents, send a GET request to the `/query` endpoint with the query text and the desired number of top documents to retrieve:
 
+```
 curl -X GET "http://localhost:8000/query?query_text=What+is+fat-tailedness?&top_k=5" -H "accept: application/json"
+```
 
-Adding Documents
+### Adding Documents
 
 To add a new document, send a POST request to the `/add_document` endpoint with the document text in JSON format:
 
-curl -X POST "http://localhost:8000/add_document" -H "Content-Type: application/json" -d '{"text": "This is a new document to add."}'
+```curl -X POST "http://localhost:8000/add_document" -H "Content-Type: application/json" -d '{"text": "This is a new document to add."}'```
 """
 
 # FastAPI app setup
