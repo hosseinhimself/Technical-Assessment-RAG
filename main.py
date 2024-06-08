@@ -15,7 +15,7 @@ documents_file = os.path.join(model_dir, "documents.pkl")
 embeddings_file = os.path.join(model_dir, "embeddings.npy")
 
 # Initialize components
-directory = "articles"
+directory = "content"
 model_name = "sentence-transformers/all-MiniLM-L6-v2"
 top_k = 3
 
@@ -47,7 +47,7 @@ documents, embedding = faiss_index.load(index_file, documents_file, embeddings_f
 retriever = FaissRetriever(faiss_index.index, documents, top_k)
    
 # Initialize query engine
-query_engine = QueryEngine(retriever, embedding_model)
+query_engine = QueryEngine(retriever, embedding_model, faiss_index, index_file, documents_file, embeddings_file)
 
 
 
@@ -59,14 +59,14 @@ async def query(query_text: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-'''
-@app.post("/add_document")
-def add_document(document: Document):
+
+@app.get("/add_document")
+async def add_document(document: Document):
     try:
         query_engine.add_document(document.text)
         return {"message": "Document added successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))'''
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn

@@ -66,22 +66,32 @@ class FaissIndex:
         self.index = faiss.IndexFlatL2(self.dimension)
         self.index.add(embeddings)
 
+    def save(self, index_file, documents_file, embeddings_file, documents):
+            faiss.write_index(self.index, index_file)
+            with open(documents_file, "wb") as f:
+                pickle.dump(documents, f)
+            np.save(embeddings_file, self.index.reconstruct_n(0, self.index.ntotal))
+
     def load(self, index_file, documents_file, embeddings_file):
-        # Existing code
         self.index = faiss.read_index(index_file)
         with open(documents_file, "rb") as f:
             documents = pickle.load(f)
         embeddings = np.load(embeddings_file)
-        self.dimension = embeddings.shape[1] 
+        self.dimension = embeddings.shape[1]
         return documents, embeddings
+
 
     def add_document(self, document, embedding):
         self.add_embeddings(np.array([embedding]))
 
 class QueryEngine:
-    def __init__(self, retriever, embedding_model):
+    def __init__(self, retriever, embedding_model, faiss_index, index_file, documents_file, embeddings_file):
         self.retriever = retriever
         self.embedding_model = embedding_model
+        self.faiss_index = faiss_index
+        self.index_file = index_file
+        self.documents_file = documents_file
+        self.embeddings_file = embeddings_file
 
     def query(self, query_text):
         query_embedding = self.embedding_model.get_embeddings([query_text])[0]
@@ -100,7 +110,8 @@ class QueryEngine:
             # Generate the embedding for the new document
             new_embedding = self.embedding_model.get_embeddings([document_text])[0]
             # Add the document and its embedding to the FAISS index
-            self.retriever.index.add_document(refined_document, new_embedding)
+            self.faiss_index.add_document(new_embedding)
+            self.faiss_index.save(self.index_file, self.documents_file, self.embeddings_file, self.retriever.documents)
 
 class FaissRetriever:
     def __init__(self, index, documents, top_k):
