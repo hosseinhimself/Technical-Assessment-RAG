@@ -3,7 +3,13 @@ import os
 from RAGModel import DocumentProcessor, EmbeddingModel, FaissIndex, FaissRetriever, QueryEngine, Document
 
 # FastAPI app setup
-app = FastAPI()
+app = FastAPI(
+    title="Technical Assessment for RAG API",
+    description="An API for the RAG model with document addition and query capabilities.",
+    version="1.0.0",
+    docs_url="/docs",  
+    redoc_url="/redoc"
+)
 
 # Directory setup for saving models and related files
 model_dir = "assets"
@@ -17,7 +23,7 @@ embeddings_file = os.path.join(model_dir, "embeddings.npy")
 # Initialize components
 directory = "content"
 model_name = "sentence-transformers/all-MiniLM-L6-v2"
-top_k = 3
+default_top_k = 3
 
 # Conditional loading/creation of FAISS index and documents
 if not (os.path.exists(index_file) and os.path.exists(documents_file) and os.path.exists(embeddings_file)):
@@ -44,7 +50,7 @@ else:
 documents, embedding = faiss_index.load(index_file, documents_file, embeddings_file)
 
 # Initialize retriever
-retriever = FaissRetriever(faiss_index.index, documents, top_k)
+retriever = FaissRetriever(faiss_index.index, documents, default_top_k)
    
 # Initialize query engine
 query_engine = QueryEngine(retriever, embedding_model, faiss_index, index_file, documents_file, embeddings_file)
@@ -52,8 +58,14 @@ query_engine = QueryEngine(retriever, embedding_model, faiss_index, index_file, 
 
 
 @app.get("/query")
-async def query(query_text: str):
+async def query(query_text: str, top_k: int):
+    """
+    Retrieves context related to the query text.
+    - **query_text**: The text to query for relevant documents.
+    - **top_k**: The number of top documents to retrieve.
+    """
     try:
+        retriever.top_k = top_k
         context = query_engine.query(query_text)
         return {"context": context}
     except Exception as e:
@@ -62,6 +74,10 @@ async def query(query_text: str):
 
 @app.get("/add_document")
 async def add_document(document: Document):
+    """
+    Adds a new document to the index.
+    - **document**: The document to be added.
+    """
     try:
         query_engine.add_document(document.text)
         return {"message": "Document added successfully"}
