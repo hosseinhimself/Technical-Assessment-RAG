@@ -2,13 +2,45 @@ from fastapi import FastAPI, HTTPException
 import os
 from RAGModel import DocumentProcessor, EmbeddingModel, FaissIndex, FaissRetriever, QueryEngine, Document
 
+
+# Description in plain text format
+description = """
+RAG API
+
+This API provides functionality for a Retrieval-Augmented Generation (RAG) model. The main features include querying a corpus for relevant documents and adding new documents to the index.
+
+Features
+
+- Query Documents: Retrieve the most relevant documents based on a query.
+- Add Documents: Add new documents to the index to enhance the corpus.
+
+Endpoints
+
+- /query: Retrieve relevant documents based on a query text.
+- /add_document: Add a new document to the index.
+
+Example Usage
+
+Querying Documents
+
+To query documents, send a GET request to the `/query` endpoint with the query text and the desired number of top documents to retrieve:
+
+curl -X GET "http://localhost:8000/query?query_text=What+is+fat-tailedness?&top_k=5" -H "accept: application/json"
+
+Adding Documents
+
+To add a new document, send a POST request to the `/add_document` endpoint with the document text in JSON format:
+
+curl -X POST "http://localhost:8000/add_document" -H "Content-Type: application/json" -d '{"text": "This is a new document to add."}'
+"""
+
 # FastAPI app setup
 app = FastAPI(
-    title="Technical Assessment for RAG API",
-    description="An API for the RAG model with document addition and query capabilities.",
+    title="RAG API",
+    description=description,
     version="1.0.0",
-    docs_url="/docs",  
-    redoc_url="/redoc"
+    docs_url="/docs",  # Swagger UI
+    redoc_url="/redoc"  # ReDoc
 )
 
 # Directory setup for saving models and related files
@@ -60,9 +92,13 @@ query_engine = QueryEngine(retriever, embedding_model, faiss_index, index_file, 
 @app.get("/query")
 async def query(query_text: str, top_k: int):
     """
-    Retrieves context related to the query text.
+    Retrieve context related to the query text.
+    
     - **query_text**: The text to query for relevant documents.
-    - **top_k**: The number of top documents to retrieve.
+    - **top_k**: The number of top documents to retrieve (default is 3).
+    
+    **Returns**: 
+    - **context**: The most relevant documents related to the query text.
     """
     try:
         retriever.top_k = top_k
@@ -76,7 +112,11 @@ async def query(query_text: str, top_k: int):
 async def add_document(document: Document):
     """
     Adds a new document to the index.
+    
     - **document**: The document to be added.
+    
+    **Returns**: 
+    - **message**: Confirmation message indicating the document was added successfully.
     """
     try:
         query_engine.add_document(document.text)
